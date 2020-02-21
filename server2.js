@@ -12,6 +12,12 @@ var schema = buildSchema(`
 
     type Mutation {
       updateCourseTopic(id:Int!, topic:String):Course
+      addNewCourse(id:Int!,
+        title:String,
+        author:String,
+        description:String,
+        topic:String,
+        url:String ): [Course]
     }
 
     type Course {
@@ -80,12 +86,19 @@ updateCourseTopic = ({ id, topic }) => {
   })[0];
 };
 
+addNewCourse = ({ id, title, author, description, url, topic }) => {
+  courseData[id] = { id, title, author, description, url, topic };
+
+  return courseData;
+};
+
 //Root Resolver
 var root = {
   message: () => "Hello",
   course: getCourse,
   courses: getCourses,
-  updateCourseTopic: updateCourseTopic
+  updateCourseTopic: updateCourseTopic,
+  addNewCourse: addNewCourse
 };
 
 //Express server
