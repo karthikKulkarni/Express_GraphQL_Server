@@ -59,9 +59,11 @@ var courseData = [
 
 getCourse = args => {
   var id = args.id;
-  return courseData.filter(course => {
+  var course = courseData.filter(course => {
     return course.id == id;
   });
+
+  return course[0];
 };
 
 getCourses = args => {
