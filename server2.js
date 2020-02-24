@@ -1,5 +1,6 @@
 var express = require("express");
 var express_graphql = require("express-graphql");
+const cors = require("cors");
 var { buildSchema } = require("graphql");
 
 //Schema
@@ -7,7 +8,9 @@ var schema = buildSchema(`
     type Query {
       message:String
       course(id:Int!):Course
-      courses(topic:String):[Course] 
+      allCourses:[Course]
+      coursesForId(id:Int!):[Course]
+      coursesForTopic(topic:String):[Course] 
     }
 
     type Mutation {
@@ -66,7 +69,22 @@ getCourse = args => {
   return course[0];
 };
 
-getCourses = args => {
+getAllCourses = () => {
+  return courseData;
+};
+
+getCoursesForId = args => {
+  if (args.id !== -1) {
+    var id = args.id;
+    return courseData.filter(course => {
+      return course.id == id;
+    });
+  } else {
+    return courseData;
+  }
+};
+
+getCoursesForTopic = args => {
   if (args.topic) {
     var topic = args.topic;
     return courseData.filter(course => {
@@ -98,13 +116,16 @@ addNewCourse = ({ id, title, author, description, url, topic }) => {
 var root = {
   message: () => "Hello",
   course: getCourse,
-  courses: getCourses,
+  allCourses: getAllCourses,
+  coursesForId: getCoursesForId,
+  coursesForTopic: getCoursesForTopic,
   updateCourseTopic: updateCourseTopic,
   addNewCourse: addNewCourse
 };
 
 //Express server
 var app = express();
+app.use(cors());
 app.use(
   "/graphql",
   express_graphql({
